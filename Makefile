@@ -13,7 +13,10 @@ include config.mk
 BIT32_64=$(shell getconf LONG_BIT)
 
 BUILD_DIR=$(shell pwd)
+
 TOOLS_DIR=$(BUILD_DIR)/../tools
+LIBUSB_DIR=$(TOOLS_DIR)/common/libusb-1.0.20
+DFU_DIR=$(TOOLS_DIR)/dfu
 UBOOT_DIR=$(BUILD_DIR)/../u-boot
 
 ifeq ($(BIT32_64), 64)
@@ -25,7 +28,16 @@ endif
 OUT_DIR=$(BUILD_DIR)/out
 UBOOT_OUT_DIR=$(OUT_DIR)/u-boot
 
-all: uboot uboot-clean
+all: libusb dfu dfu-clean uboot uboot-clean
+
+libusb:
+	cd $(LIBUSB_DIR) && ./configure && make && cd $(BUILD_DIR)
+
+dfu:
+	make -C $(DFU_DIR)
+
+dfu-clean:
+	make -C $(DFU_DIR) clean
 
 uboot:
 	mkdir -p $(UBOOT_OUT_DIR)
