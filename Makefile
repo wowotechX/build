@@ -28,7 +28,7 @@ endif
 OUT_DIR=$(BUILD_DIR)/out
 UBOOT_OUT_DIR=$(OUT_DIR)/u-boot
 
-all: libusb dfu dfu-clean uboot uboot-clean
+all: libusb dfu dfu-clean uboot-config uboot uboot-clean
 
 libusb:
 	cd $(LIBUSB_DIR) && ./configure && make && cd $(BUILD_DIR)
@@ -38,6 +38,16 @@ dfu:
 
 dfu-clean:
 	make -C $(DFU_DIR) clean
+
+#
+# Be careful: the xxx_defconf file of your board will be overrided
+#	after you running 'make uboot-config'.
+#
+uboot-config:
+	mkdir -p $(UBOOT_OUT_DIR)
+	cp -f $(UBOOT_DIR)/configs/$(BOARD_NAME)_defconfig $(UBOOT_OUT_DIR)/.config
+	make -C $(UBOOT_DIR) KBUILD_OUTPUT=$(UBOOT_OUT_DIR) menuconfig
+	cp -f $(UBOOT_OUT_DIR)/.config $(UBOOT_DIR)/configs/$(BOARD_NAME)_defconfig
 
 uboot:
 	mkdir -p $(UBOOT_OUT_DIR)
