@@ -7,10 +7,8 @@
 #
 # SPDX-License-Identifier:	GPL-2.0+
 #
-
 include config.mk
-
-BIT32_64=$(shell getconf LONG_BIT)
+include env_prepare.mk
 
 BUILD_DIR=$(shell pwd)
 
@@ -18,17 +16,14 @@ TOOLS_DIR=$(BUILD_DIR)/../tools
 LIBUSB_DIR=$(TOOLS_DIR)/common/libusb-1.0.20
 DFU_DIR=$(TOOLS_DIR)/dfu
 UBOOT_DIR=$(BUILD_DIR)/../u-boot
-
-ifeq ($(BIT32_64), 64)
-CROSS_COMPILE=$(TOOLS_DIR)/common/gcc-linaro-4.9-2015.02-3-x86_64_aarch64-linux-gnu/bin/aarch64-linux-gnu-
-else
-CROSS_COMPILE=$(TOOLS_DIR)/common/gcc-linaro-aarch64-linux-gnu-4.8-2013.12_linux/bin/aarch64-linux-gnu-
-endif
+KERNEL_DIR=$(BUILD_DIR)/../linux
 
 OUT_DIR=$(BUILD_DIR)/out
 UBOOT_OUT_DIR=$(OUT_DIR)/u-boot
+KERNEL_OUT_DIR=$(OUT_DIR)/linux
 
-all: libusb dfu dfu-clean uboot-config uboot uboot-clean
+all: env_prepare libusb dfu dfu-clean uboot-config uboot uboot-clean kernel-config kernel kernel-clean
+
 
 libusb:
 	cd $(LIBUSB_DIR) && ./configure && make && cd $(BUILD_DIR)
@@ -56,3 +51,21 @@ uboot:
 
 uboot-clean:
 	rm $(UBOOT_OUT_DIR) -rf
+#
+# Be careful: the xxx_defconf file of your board will be overrided
+#	after you running 'make kernel-config'.
+#
+kernel-config:
+	mkdir -p $(KERNEL_OUT_DIR)
+	touch $(KERNEL_DIR)/arch/$(BOARD_ARCH)/configs/$(BOARD_NAME)_defconfig
+	cp -f $(KERNEL_DIR)/arch/$(BOARD_ARCH)/configs/$(BOARD_NAME)_defconfig $(KERNEL_OUT_DIR)/.config
+	make -C $(KERNEL_DIR) KBUILD_OUTPUT=$(KERNEL_OUT_DIR) ARCH=$(BOARD_ARCH) menuconfig
+	cp -f $(KERNEL_OUT_DIR)/.config $(KERNEL_DIR)/arch/$(BOARD_ARCH)/configs/$(BOARD_NAME)_defconfig
+
+kernel:
+	mkdir -p $(KERNEL_OUT_DIR)
+	make -C $(KERNEL_DIR) CROSS_COMPILE=$(CROSS_COMPILE) KBUILD_OUTPUT=$(KERNEL_OUT_DIR) $(BOARD_NAME)_defconfig
+	make -C $(KERNEL_DIR) CROSS_COMPILE=$(CROSS_COMPILE) KBUILD_OUTPUT=$(KERNEL_OUT_DIR)
+
+kernel-clean:
+	rm $(KERNEL_OUT_DIR) -rf

@@ -9,3 +9,4 @@
 #
 
 BOARD_NAME=bubblegum
+BOARD_ARCH=arm64
