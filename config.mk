@@ -8,5 +8,7 @@
 # SPDX-License-Identifier:	GPL-2.0+
 #
 
-BOARD_NAME=bubblegum
-BOARD_ARCH=arm64
+#BOARD_NAME=bubblegum
+#BOARD_ARCH=arm64
+
+BOARD_NAME=tiny210
