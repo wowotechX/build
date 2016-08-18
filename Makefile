@@ -22,7 +22,9 @@ OUT_DIR=$(BUILD_DIR)/out
 UBOOT_OUT_DIR=$(OUT_DIR)/u-boot
 KERNEL_OUT_DIR=$(OUT_DIR)/linux
 
-all: env_prepare libusb dfu dfu-clean uboot-config uboot uboot-clean kernel-config kernel kernel-clean
+all: uboot kernel
+
+clean: dfu-clean uboot-clean kernel-clean
 
 
 libusb:
@@ -64,7 +66,7 @@ kernel-config:
 kernel:
 	mkdir -p $(KERNEL_OUT_DIR)
 	make -C $(KERNEL_DIR) CROSS_COMPILE=$(CROSS_COMPILE) KBUILD_OUTPUT=$(KERNEL_OUT_DIR) ARCH=$(BOARD_ARCH) $(BOARD_NAME)_defconfig
-	make -C $(KERNEL_DIR) CROSS_COMPILE=$(CROSS_COMPILE) KBUILD_OUTPUT=$(KERNEL_OUT_DIR) ARCH=$(BOARD_ARCH)
+	make -C $(KERNEL_DIR) CROSS_COMPILE=$(CROSS_COMPILE) KBUILD_OUTPUT=$(KERNEL_OUT_DIR) ARCH=$(BOARD_ARCH) Image dtbs
 
 kernel-clean:
 	rm $(KERNEL_OUT_DIR) -rf
