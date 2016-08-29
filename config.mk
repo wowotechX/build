@@ -13,3 +13,5 @@
 
 BOARD_NAME=tiny210
 BOARD_ARCH=arm
+
+ROOTFS_IMAGE_TYPE=ramdisk

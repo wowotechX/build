@@ -17,14 +17,17 @@ LIBUSB_DIR=$(TOOLS_DIR)/common/libusb-1.0.20
 DFU_DIR=$(TOOLS_DIR)/dfu
 UBOOT_DIR=$(BUILD_DIR)/../u-boot
 KERNEL_DIR=$(BUILD_DIR)/../linux
+BUSYBOX_DIR=$(TOOLS_DIR)/common/busybox-1.24.2
+ROOTFS_DIR=$(TOOLS_DIR)/common/rootfs
 
 OUT_DIR=$(BUILD_DIR)/out
 UBOOT_OUT_DIR=$(OUT_DIR)/u-boot
 KERNEL_OUT_DIR=$(OUT_DIR)/linux
+ROOTFS_OUT_DIR=$(OUT_DIR)/rootfs
 
 all: uboot kernel
 
-clean: dfu-clean uboot-clean kernel-clean
+clean: dfu-clean uboot-clean kernel-clean rootfs-clean
 
 
 libusb:
@@ -70,3 +73,22 @@ kernel:
 
 kernel-clean:
 	rm $(KERNEL_OUT_DIR) -rf
+
+#
+# It will build busybox in tools dir and install.
+# Notice : I have generate a .config for busybox and set the install dir to the dir of rootfs.
+#          It will install those bin file to tools/common/rootfs automatically.
+#          If it is not necessary, you don't need make menuconfig or make defconfig.
+#
+busybox:
+	make -C $(BUSYBOX_DIR) CROSS_COMPILE=$(CROSS_COMPILE) ARCH=$(BOARD_ARCH)
+	make -C $(BUSYBOX_DIR) CROSS_COMPILE=$(CROSS_COMPILE) ARCH=$(BOARD_ARCH) install
+
+busybox-clean:
+	make -C $(BUSYBOX_DIR) CROSS_COMPILE=$(CROSS_COMPILE) ARCH=$(BOARD_ARCH) clean
+
+rootfs:
+	./mkrootfs.sh $(ROOTFS_IMAGE_TYPE) $(BOARD_NAME) $(BOARD_ARCH)
+
+rootfs-clean:
+	rm $(ROOTFS_OUT_DIR) -rf
