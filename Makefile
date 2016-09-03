@@ -22,6 +22,10 @@ OUT_DIR=$(BUILD_DIR)/out
 UBOOT_OUT_DIR=$(OUT_DIR)/u-boot
 KERNEL_OUT_DIR=$(OUT_DIR)/linux
 
+ifeq ($(BOARD_ARCH), arm64)
+KERNEL_DEFCONFIG=xprj_defconfig
+endif
+
 all: uboot kernel
 
 clean: dfu-clean uboot-clean kernel-clean
@@ -59,13 +63,13 @@ uboot-clean:
 #
 kernel-config:
 	mkdir -p $(KERNEL_OUT_DIR)
-	cp -f $(KERNEL_DIR)/arch/$(BOARD_ARCH)/configs/$(BOARD_NAME)_defconfig $(KERNEL_OUT_DIR)/.config
+	cp -f $(KERNEL_DIR)/arch/$(BOARD_ARCH)/configs/$(KERNEL_DEFCONFIG) $(KERNEL_OUT_DIR)/.config
 	make -C $(KERNEL_DIR) KBUILD_OUTPUT=$(KERNEL_OUT_DIR) ARCH=$(BOARD_ARCH) menuconfig
-	cp -f $(KERNEL_OUT_DIR)/.config $(KERNEL_DIR)/arch/$(BOARD_ARCH)/configs/$(BOARD_NAME)_defconfig
+	cp -f $(KERNEL_OUT_DIR)/.config $(KERNEL_DIR)/arch/$(BOARD_ARCH)/configs/$(KERNEL_DEFCONFIG)
 
 kernel:
 	mkdir -p $(KERNEL_OUT_DIR)
-	make -C $(KERNEL_DIR) CROSS_COMPILE=$(CROSS_COMPILE) KBUILD_OUTPUT=$(KERNEL_OUT_DIR) ARCH=$(BOARD_ARCH) $(BOARD_NAME)_defconfig
+	make -C $(KERNEL_DIR) CROSS_COMPILE=$(CROSS_COMPILE) KBUILD_OUTPUT=$(KERNEL_OUT_DIR) ARCH=$(BOARD_ARCH) $(KERNEL_DEFCONFIG)
 	make -C $(KERNEL_DIR) CROSS_COMPILE=$(CROSS_COMPILE) KBUILD_OUTPUT=$(KERNEL_OUT_DIR) ARCH=$(BOARD_ARCH) Image dtbs
 
 kernel-clean:
