@@ -26,7 +26,10 @@ ifeq ($(BOARD_ARCH), arm64)
 KERNEL_DEFCONFIG=xprj_defconfig
 endif
 
-all: uboot kernel
+UIMAGE_ITS_FILE=$(BUILD_DIR)/fit_uImage.its
+UIMAGE_ITB_FILE=$(OUT_DIR)/xprj_uImage.itb
+
+all: uboot kernel uImage
 
 clean: dfu-clean uboot-clean kernel-clean
 
@@ -57,6 +60,7 @@ uboot:
 
 uboot-clean:
 	rm $(UBOOT_OUT_DIR) -rf
+
 #
 # Be careful: the xxx_defconf file of your board will be overrided
 #	after you running 'make kernel-config'.
@@ -74,3 +78,7 @@ kernel:
 
 kernel-clean:
 	rm $(KERNEL_OUT_DIR) -rf
+
+uImage:
+	mkdir -p $(OUT_DIR)
+	$(UBOOT_OUT_DIR)/tools/mkimage -f $(UIMAGE_ITS_FILE) $(UIMAGE_ITB_FILE)
