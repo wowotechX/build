@@ -13,30 +13,18 @@
 			description = "Unify(TODO) ARM64 Linux kernel";
 			data = /incbin/("./out/linux/arch/arm64/boot/Image");
 			type = "kernel";
-			arch = "arm";
+			arch = "arm64";
 			os = "linux";
 			compression = "none";
 			load = <0x00080000>;
 			entry = <0x00080000>;
-			hash@1 {
-				algo = "crc32";
-			};
-			hash@2 {
-				algo = "sha1";
-			};
 		};
 		fdt@bubblegum96 {
 			description = "Flattened Device Tree blob for Bubblegum-96";
 			data = /incbin/("./out/linux/arch/arm64/boot/dts/actions/s900-bubblegum.dtb");
 			type = "flat_dt";
-			arch = "arm";
+			arch = "arm64";
 			compression = "none";
-			hash@1 {
-				algo = "crc32";
-			};
-			hash@2 {
-				algo = "sha1";
-			};
 		};
 	};
 
