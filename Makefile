@@ -25,7 +25,16 @@ UBOOT_OUT_DIR=$(OUT_DIR)/u-boot
 KERNEL_OUT_DIR=$(OUT_DIR)/linux
 ROOTFS_OUT_DIR=$(OUT_DIR)/rootfs
 
-all: uboot kernel
+ifeq ($(BOARD_ARCH), arm64)
+KERNEL_DEFCONFIG=xprj_defconfig
+else ifeq ($(BOARD_ARCH), arm)
+KERNEL_DEFCONFIG=$(BOARD_NAME)_defconfig
+endif
+
+UIMAGE_ITS_FILE=$(BUILD_DIR)/fit_uImage_$(BOARD_NAME).its
+UIMAGE_ITB_FILE=$(OUT_DIR)/xprj_uImage.itb
+
+all: uboot kernel uImage
 
 clean: dfu-clean uboot-clean kernel-clean rootfs-clean
 
@@ -56,23 +65,28 @@ uboot:
 
 uboot-clean:
 	rm $(UBOOT_OUT_DIR) -rf
+
 #
 # Be careful: the xxx_defconf file of your board will be overrided
 #	after you running 'make kernel-config'.
 #
 kernel-config:
 	mkdir -p $(KERNEL_OUT_DIR)
-	cp -f $(KERNEL_DIR)/arch/$(BOARD_ARCH)/configs/$(BOARD_NAME)_defconfig $(KERNEL_OUT_DIR)/.config
+	cp -f $(KERNEL_DIR)/arch/$(BOARD_ARCH)/configs/$(KERNEL_DEFCONFIG) $(KERNEL_OUT_DIR)/.config
 	make -C $(KERNEL_DIR) KBUILD_OUTPUT=$(KERNEL_OUT_DIR) ARCH=$(BOARD_ARCH) menuconfig
-	cp -f $(KERNEL_OUT_DIR)/.config $(KERNEL_DIR)/arch/$(BOARD_ARCH)/configs/$(BOARD_NAME)_defconfig
+	cp -f $(KERNEL_OUT_DIR)/.config $(KERNEL_DIR)/arch/$(BOARD_ARCH)/configs/$(KERNEL_DEFCONFIG)
 
 kernel:
 	mkdir -p $(KERNEL_OUT_DIR)
-	make -C $(KERNEL_DIR) CROSS_COMPILE=$(CROSS_COMPILE) KBUILD_OUTPUT=$(KERNEL_OUT_DIR) ARCH=$(BOARD_ARCH) $(BOARD_NAME)_defconfig
+	make -C $(KERNEL_DIR) CROSS_COMPILE=$(CROSS_COMPILE) KBUILD_OUTPUT=$(KERNEL_OUT_DIR) ARCH=$(BOARD_ARCH) $(KERNEL_DEFCONFIG)
 	make -C $(KERNEL_DIR) CROSS_COMPILE=$(CROSS_COMPILE) KBUILD_OUTPUT=$(KERNEL_OUT_DIR) ARCH=$(BOARD_ARCH) Image dtbs
 
 kernel-clean:
 	rm $(KERNEL_OUT_DIR) -rf
+
+uImage:
+	mkdir -p $(OUT_DIR)
+	$(UBOOT_OUT_DIR)/tools/mkimage -f $(UIMAGE_ITS_FILE) $(UIMAGE_ITB_FILE)
 
 #
 # It will build busybox in tools dir and install.
