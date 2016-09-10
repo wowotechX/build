@@ -88,6 +88,9 @@ uImage:
 	mkdir -p $(OUT_DIR)
 	$(UBOOT_OUT_DIR)/tools/mkimage -f $(UIMAGE_ITS_FILE) $(UIMAGE_ITB_FILE)
 
+kernel-img:
+	./mkkernelimg.sh $(KERNEL_IMAGE_TYPE) $(BOARD_NAME) $(BOARD_ARCH) $(CROSS_COMPILE) $(UIMAGE_LOADADDR) $(UIMAGE_ENTRYADDR)
+
 #
 # It will build busybox in tools dir and install.
 # Notice : I have generate a .config for busybox and set the install dir to the dir of rootfs.
