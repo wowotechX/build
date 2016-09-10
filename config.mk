@@ -24,8 +24,8 @@ ROOTFS_IMAGE_TYPE=ramdisk
 ##
 ## Defining kernel image type that want be generate.
 ##
-#KERNEL_IMAGE_TYPE=fit_uimage
-KERNEL_IMAGE_TYPE=legacy_uimage
+KERNEL_IMAGE_TYPE=fit_uimage
+#KERNEL_IMAGE_TYPE=legacy_uimage
 
 
 ##
