@@ -29,6 +29,17 @@ echo "ROOTFS_IMAGE_TYPE is $ROOTFS_IMAGE_TYPE"
 echo $ROOTFS_OUT_DIR
 mkdir -p $ROOTFS_OUT_DIR
 
+
+## Rootfs need some subdir. So need mkdir in there.
+ROOTFS_SUBDIR=(bin dev etc lib proc sbin sys usr mnt tmp var usr/bin usr/lib usr/sbin lib/modules)
+for SUBDIR in ${ROOTFS_SUBDIR[*]}
+do
+	if [ ! -d ${ROOTFS_DIR}/${SUBDIR} ]; then
+		mkdir ${ROOTFS_DIR}/${SUBDIR}
+	fi
+done
+
+
 ## Generate ramdisk image for rootfs.
 if [ "$ROOTFS_IMAGE_TYPE" = "$TYPE_RAMDISK" ]; then
 	genext2fs -b 4096 -d ${ROOTFS_DIR} ${ROOTFS_OUT_DIR}/${TYPE_RAMDISK}
