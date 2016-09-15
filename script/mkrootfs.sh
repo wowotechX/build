@@ -1,25 +1,10 @@
 #!/bin/bash
 
-BUILD_DIR=$(pwd)
-
-TOOLS_DIR=$BUILD_DIR/../tools
-ROOTFS_DIR=$TOOLS_DIR/common/rootfs
-
-OUT_DIR=$BUILD_DIR/out
-ROOTFS_OUT_DIR=$OUT_DIR/rootfs
-UBOOT_OUT_DIR=$OUT_DIR/u-boot
+## Get the environment and some variable.
+source ./build_env.sh
 
 ## Define image type in there
 TYPE_RAMDISK=ramdisk
-
-## Get the argv.
-## argv[1] is target image type.
-## argv[2] is board name.
-## argv[3] is arch type. 
-## usage example: ./mkrootfs.sh tiny210 arm
-ROOTFS_IMAGE_TYPE=$1
-BOARD_NAME=$2
-BOARD_ARCH=$3
 
 ## Print the type information
 echo "Will generate rootfs image!"

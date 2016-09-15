@@ -1,12 +1,7 @@
 #!/bin/bash
 
-BUILD_DIR=$(pwd)
-
-KERNEL_DIR=$BUILD_DIR/../linux
-
-OUT_DIR=$BUILD_DIR/out
-UBOOT_OUT_DIR=$OUT_DIR/u-boot
-KERNEL_OUT_DIR=$OUT_DIR/linux
+## Get the environment and some variable.
+source ./build_env.sh
 
 
 ## Define image type in there
@@ -14,15 +9,7 @@ TYPE_FIT=fit_uimage
 TYPE_LEGACY=legacy_uimage
 
 
-## Get the argv.
-## argv[1] is target image type.
-## argv[2] is board name.
-## argv[3] is arch type. 
-## usage example: ./mkkernelimg.sh tiny210 
-KERNEL_IMAGE_TYPE=$1
-BOARD_NAME=$2
-BOARD_ARCH=$3
-
+## Generate uImage.
 if [ "$KERNEL_IMAGE_TYPE" = "$TYPE_FIT" ]; then
 	echo "Start generate FIT kernel image!!!"
 	UIMAGE_ITS_FILE=${BUILD_DIR}/its/fit_uImage_${BOARD_NAME}.its
