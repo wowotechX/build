@@ -31,5 +31,14 @@ KERNEL_IMAGE_TYPE=fit_uimage
 ##
 ## Setting the load addr and entry addr of uImage.
 ##
+#UIMAGE_LOADADDR=0x00080000
+#UIMAGE_ENTRYADDR=0x00080000
 UIMAGE_LOADADDR=0x20008000
 UIMAGE_ENTRYADDR=0x20008040
+
+
+##
+## Setting the name of dtb
+##
+#DTB_NAME=actions/s900-bubblegum.dtb
+DTB_NAME=s5pv210-tiny210.dtb

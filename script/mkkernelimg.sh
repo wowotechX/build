@@ -11,9 +11,11 @@ TYPE_LEGACY=legacy_uimage
 
 ## Generate uImage.
 if [ "$KERNEL_IMAGE_TYPE" = "$TYPE_FIT" ]; then
+	echo "Generate ${ITS_FILE}"
+	./gen_its.sh
 	echo "Start generate FIT kernel image!!!"
-	UIMAGE_ITS_FILE=${BUILD_DIR}/its/fit_uImage_${BOARD_NAME}.its
-	UIMAGE_ITB_FILE=${OUT_DIR}/xprj_uImage.itb
+	UIMAGE_ITS_FILE=${ITS_FILE}
+	UIMAGE_ITB_FILE=${FIT_OUT_DIR}/xprj_uImage.itb
 	mkdir -p ${OUT_DIR}
 	${UBOOT_OUT_DIR}/tools/mkimage -f ${UIMAGE_ITS_FILE} ${UIMAGE_ITB_FILE}
 	echo "Finish generate FIT kernel image!!!"
