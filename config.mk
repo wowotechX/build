@@ -18,7 +18,8 @@ BOARD_ARCH=arm
 ##
 ## Defining rootfs image type that want be generate.
 ##
-ROOTFS_IMAGE_TYPE=ramdisk
+#ROOTFS_IMAGE_TYPE=ramdisk
+ROOTFS_IMAGE_TYPE=initramfs
 
 
 ##

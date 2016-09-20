@@ -16,7 +16,7 @@ elif [ "${BOARD_ARCH}" = "arm64" ];then
 	FDT_IMAGE=${ARM64_KERNEL_IMAGE_DIR}/dts/${DTB_NAME}
 fi	
 
-RAMDISK_IMAGE=${ROOTFS_OUT_DIR}/ramdisk.gz
+RAMDISK_IMAGE=${ROOTFS_OUT_DIR}/${ROOTFS_IMAGE_TYPE}.gz
 
 function print_note()
 {
