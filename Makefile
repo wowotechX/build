@@ -17,6 +17,7 @@ LIBUSB_DIR=$(TOOLS_DIR)/common/libusb-1.0.20
 DFU_DIR=$(TOOLS_DIR)/dfu
 UBOOT_DIR=$(BUILD_DIR)/../u-boot
 KERNEL_DIR=$(BUILD_DIR)/../linux
+SCRIPT_DIR=$(BUILD_DIR)/script
 
 OUT_DIR=$(BUILD_DIR)/out
 UBOOT_OUT_DIR=$(OUT_DIR)/u-boot
@@ -24,10 +25,14 @@ KERNEL_OUT_DIR=$(OUT_DIR)/linux
 
 ifeq ($(BOARD_ARCH), arm64)
 KERNEL_DEFCONFIG=xprj_defconfig
+KERNEL_TARGET=Image dtbs
+else ifeq ($(BOARD_ARCH), arm)
+KERNEL_DEFCONFIG=$(BOARD_NAME)_defconfig
+KERNEL_TARGET=Image dtbs zImage
 endif
 
-UIMAGE_ITS_FILE=$(BUILD_DIR)/fit_uImage.its
-UIMAGE_ITB_FILE=$(OUT_DIR)/xprj_uImage.itb
+UIMAGE_ITS_FILE=$(SCRIPT_DIR)/fit_uImage_$(BOARD_NAME).its
+UIMAGE_ITB_FILE=$(OUT_DIR)/xprj_uImage_$(BOARD_NAME).itb
 
 all: uboot kernel uImage
 
@@ -74,7 +79,7 @@ kernel-config:
 kernel:
 	mkdir -p $(KERNEL_OUT_DIR)
 	make -C $(KERNEL_DIR) CROSS_COMPILE=$(CROSS_COMPILE) KBUILD_OUTPUT=$(KERNEL_OUT_DIR) ARCH=$(BOARD_ARCH) $(KERNEL_DEFCONFIG)
-	make -C $(KERNEL_DIR) CROSS_COMPILE=$(CROSS_COMPILE) KBUILD_OUTPUT=$(KERNEL_OUT_DIR) ARCH=$(BOARD_ARCH) Image dtbs
+	make -C $(KERNEL_DIR) CROSS_COMPILE=$(CROSS_COMPILE) KBUILD_OUTPUT=$(KERNEL_OUT_DIR) ARCH=$(BOARD_ARCH) $(KERNEL_TARGET)
 
 kernel-clean:
 	rm $(KERNEL_OUT_DIR) -rf

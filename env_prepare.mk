@@ -20,5 +20,11 @@ CROSS_COMPILE=$(shell pwd)/gcc-linaro-aarch64-linux-gnu-4.8-2013.12_linux/bin/aa
 endif
 endif
 
+ifeq ($(BOARD_NAME), tiny210)
+#use arm-linux-gcc-4.8.3 to build uboot and uboot-spl.
+COMPILE_URL=https://github.com/ooonebook/arm-none-linux-gnueabi-4.8.git
+CROSS_COMPILE=$(shell pwd)/arm-none-linux-gnueabi-4.8/bin/arm-none-linux-gnueabi-
+endif
+
 env_prepare:
 	git clone $(COMPILE_URL)

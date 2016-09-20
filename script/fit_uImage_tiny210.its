@@ -1,0 +1,39 @@
+/*
+ * U-Boot uImage source file for "X project"
+ */
+
+/dts-v1/;
+
+/ {
+	description = "U-Boot uImage source file for X project";
+	#address-cells = <1>;
+
+	images {
+		kernel@tiny210 {
+			description = "tiny210 ARM Linux kernel";
+			data = /incbin/("../out/linux/arch/arm/boot/zImage");
+			type = "kernel";
+			arch = "arm";
+			os = "linux";
+			compression = "none";
+			load = <0x20080000>;
+			entry = <0x20080040>;
+		};
+		fdt@tiny210 {
+			description = "Flattened Device Tree blob for tiny210";
+			data = /incbin/("../out/linux/arch/arm/boot/dts/s5pv210-tiny210.dtb");
+			type = "flat_dt";
+			arch = "arm64";
+			compression = "none";
+		};
+	};
+
+	configurations {
+		default = "conf@tiny210";
+		conf@tiny210 {
+			description = "Boot Linux kernel with FDT blob";
+			kernel = "kernel@tiny210";
+			fdt = "fdt@tiny210";
+		};
+	};
+};
