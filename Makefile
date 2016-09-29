@@ -31,6 +31,8 @@ KERNEL_DEFCONFIG=$(BOARD_NAME)_defconfig
 KERNEL_TARGET=Image dtbs zImage
 endif
 
+XPRJ_CFG_FILE=$(OUT_DIR)/xprj_config.h
+
 UIMAGE_ITS_FILE=$(SCRIPT_DIR)/fit_uImage_$(BOARD_NAME).its
 UIMAGE_ITB_FILE=$(OUT_DIR)/xprj_uImage_$(BOARD_NAME).itb
 
@@ -84,6 +86,12 @@ kernel:
 kernel-clean:
 	rm $(KERNEL_OUT_DIR) -rf
 
-uImage:
+uImage: config-gen
 	mkdir -p $(OUT_DIR)
-	$(UBOOT_OUT_DIR)/tools/mkimage -f $(UIMAGE_ITS_FILE) $(UIMAGE_ITB_FILE)
+	@echo "Preprocessor the .dts file ..."
+	cpp -nostdinc -I include -undef -x assembler-with-cpp $(UIMAGE_ITS_FILE) > $(UIMAGE_ITS_FILE).tmp
+	$(UBOOT_OUT_DIR)/tools/mkimage -f $(UIMAGE_ITS_FILE).tmp $(UIMAGE_ITB_FILE)
+	@rm -f $(UIMAGE_ITS_FILE).tmp
+
+config-gen:
+	$(SCRIPT_DIR)/config_gen.sh $(BUILD_DIR)/config.mk $(XPRJ_CFG_FILE)

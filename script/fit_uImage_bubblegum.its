@@ -1,6 +1,7 @@
 /*
  * U-Boot uImage source file for "X project"
  */
+#include "../out/xprj_config.h"
 
 /dts-v1/;
 
@@ -13,19 +14,21 @@
 			description = "Unify ARM64 Linux kernel";
 			data = /incbin/("../out/linux/arch/arm64/boot/Image");
 			type = "kernel";
-			arch = "arm64";
+			arch = XC_BOARD_ARCH;
 			os = "linux";
 			compression = "none";
-			load = <0x00080000>;
-			entry = <0x00080000>;
+			load = <XC_KERNEL_LOAD_ADDR>;
+			entry = <XC_KERNEL_ENTRY_ADDR>;
 		};
+	#if XC_DTB_ENABLE
 		fdt@bubblegum96 {
 			description = "Flattened Device Tree blob for Bubblegum-96";
 			data = /incbin/("../out/linux/arch/arm64/boot/dts/actions/s900-bubblegum.dtb");
 			type = "flat_dt";
-			arch = "arm64";
+			arch = XC_BOARD_ARCH;
 			compression = "none";
 		};
+	#endif
 	};
 
 	configurations {
@@ -33,7 +36,9 @@
 		conf@bubblegum96 {
 			description = "Boot Linux kernel with FDT blob";
 			kernel = "kernel@arm64";
+		#if XC_DTB_ENABLE
 			fdt = "fdt@bubblegum96";
+		#endif
 		};
 	};
 };
