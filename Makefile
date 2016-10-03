@@ -31,8 +31,7 @@ KERNEL_DEFCONFIG=$(BOARD_NAME)_defconfig
 KERNEL_TARGET=Image dtbs zImage
 endif
 
-XPRJ_CFG_FILE=$(OUT_DIR)/xprj_config.h
-
+UIMAGE_CFG_FILE=$(SCRIPT_DIR)/xprj_config.h
 UIMAGE_ITS_FILE=$(SCRIPT_DIR)/fit_uImage_$(BOARD_NAME).its
 UIMAGE_ITB_FILE=$(OUT_DIR)/xprj_uImage_$(BOARD_NAME).itb
 
@@ -94,4 +93,4 @@ uImage: config-gen
 	@rm -f $(UIMAGE_ITS_FILE).tmp
 
 config-gen:
-	$(SCRIPT_DIR)/config_gen.sh $(BUILD_DIR)/config.mk $(XPRJ_CFG_FILE)
+	$(SCRIPT_DIR)/config_gen.sh $(BUILD_DIR)/config.mk $(UIMAGE_CFG_FILE)

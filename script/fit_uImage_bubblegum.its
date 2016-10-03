@@ -1,7 +1,7 @@
 /*
  * U-Boot uImage source file for "X project"
  */
-#include "../out/xprj_config.h"
+#include "xprj_config.h"
 
 /dts-v1/;
 
