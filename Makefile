@@ -43,6 +43,9 @@ clean: dfu-clean uboot-clean kernel-clean
 libusb:
 	cd $(LIBUSB_DIR) && ./configure && make && cd $(BUILD_DIR)
 
+libusb-clean:
+	cd $(LIBUSB_DIR) && make distclean && cd $(BUILD_DIR)
+
 dfu:
 	make -C $(DFU_DIR)
 
@@ -94,3 +97,12 @@ uImage: config-gen
 
 config-gen:
 	$(SCRIPT_DIR)/config_gen.sh $(BUILD_DIR)/config.mk $(UIMAGE_CFG_FILE)
+
+spl-run:
+	sudo $(DFU_DIR)/dfu $(BOARD_NAME) $(SPL_BASE) $(TOOLS_DIR)/$(BOARD_VENDOR)/splboot.bin 1
+
+uimage-load:
+	sudo $(DFU_DIR)/dfu $(BOARD_NAME) $(FIT_UIMAGE_BASE) $(UIMAGE_ITB_FILE) 0
+
+uboot-run:
+	sudo $(DFU_DIR)/dfu $(BOARD_NAME) $(UBOOT_BASE) $(OUT_DIR)/u-boot/u-boot-dtb.bin 1

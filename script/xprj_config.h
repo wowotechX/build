@@ -5,6 +5,7 @@
 
 #define XC_BOARD_NAME "bubblegum"
 #define XC_BOARD_ARCH "arm64"
+#define XC_BOARD_VENDOR "actions"
 #define XC_DDR_BASE (0x0)
 #define XC_DDR_SIZE (0x3FFFFFFF)
 #define XC_SPL_BASE (0xe406b200)

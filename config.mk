@@ -12,6 +12,8 @@
 BOARD_NAME=bubblegum
 BOARD_ARCH=arm64
 
+BOARD_VENDOR=actions
+
 #
 # Memory usage information
 #
