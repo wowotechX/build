@@ -29,6 +29,16 @@
 			compression = "none";
 		};
 	#endif
+		initramfs@bubblegum96 {
+			description = "initramfs for Bubblegum-96";
+			data = /incbin/("../out/initramfs.gz");
+			type = "ramdisk";
+			arch = XC_BOARD_ARCH;
+			os = "linux";
+			compression = "gzip";
+			load = <00000000>;
+			entry = <00000000>;
+		};
 	};
 
 	configurations {
@@ -39,6 +49,7 @@
 		#if XC_DTB_ENABLE
 			fdt = "fdt@bubblegum96";
 		#endif
+			ramdisk = "initramfs@bubblegum96";
 		};
 	};
 };
