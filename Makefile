@@ -18,10 +18,13 @@ DFU_DIR=$(TOOLS_DIR)/dfu
 UBOOT_DIR=$(BUILD_DIR)/../u-boot
 KERNEL_DIR=$(BUILD_DIR)/../linux
 SCRIPT_DIR=$(BUILD_DIR)/script
+BUSYBOX_DIR=$(TOOLS_DIR)/common/busybox-1.25.1
 
 OUT_DIR=$(BUILD_DIR)/out
 UBOOT_OUT_DIR=$(OUT_DIR)/u-boot
 KERNEL_OUT_DIR=$(OUT_DIR)/linux
+BUSYBOX_OUT_DIR=$(OUT_DIR)/busybox
+ROOTFS_OUT_DIR=$(OUT_DIR)/rootfs
 
 ifeq ($(BOARD_ARCH), arm64)
 KERNEL_DEFCONFIG=xprj_defconfig
@@ -30,6 +33,8 @@ else ifeq ($(BOARD_ARCH), arm)
 KERNEL_DEFCONFIG=$(BOARD_NAME)_defconfig
 KERNEL_TARGET=Image dtbs zImage
 endif
+
+BUSYBOX_DEFCONFIG=xprj_defconfig
 
 UIMAGE_CFG_FILE=$(SCRIPT_DIR)/xprj_config.h
 UIMAGE_ITS_FILE=$(SCRIPT_DIR)/fit_uImage_$(BOARD_NAME).its
@@ -87,6 +92,25 @@ kernel:
 
 kernel-clean:
 	rm $(KERNEL_OUT_DIR) -rf
+
+busybox-config:
+	mkdir -p $(BUSYBOX_OUT_DIR)
+	cp -f $(BUSYBOX_DIR)/configs/$(BUSYBOX_DEFCONFIG) $(BUSYBOX_OUT_DIR)/.config
+	make -C $(BUSYBOX_DIR) O=$(BUSYBOX_OUT_DIR) menuconfig
+	cp -f $(BUSYBOX_OUT_DIR)/.config $(BUSYBOX_DIR)/configs/$(BUSYBOX_DEFCONFIG)
+
+busybox:
+	mkdir -p $(BUSYBOX_OUT_DIR) $(ROOTFS_OUT_DIR)
+	make -C $(BUSYBOX_DIR) CROSS_COMPILE=$(CROSS_COMPILE) O=$(BUSYBOX_OUT_DIR) $(BUSYBOX_DEFCONFIG)
+	make -C $(BUSYBOX_DIR) CROSS_COMPILE=$(CROSS_COMPILE) O=$(BUSYBOX_OUT_DIR)
+	make -C $(BUSYBOX_DIR) CROSS_COMPILE=$(CROSS_COMPILE) O=$(BUSYBOX_OUT_DIR) CONFIG_PREFIX=$(ROOTFS_OUT_DIR) install
+
+busybox-clean:
+	rm $(BUSYBOX_OUT_DIR) -rf
+
+initramfs:
+	mkdir -p $(OUT_DIR)
+	cd ${ROOTFS_OUT_DIR}; find . | cpio -H newc -o | gzip -9 -n > ${OUT_DIR}/initramfs.gz
 
 uImage: config-gen
 	mkdir -p $(OUT_DIR)
