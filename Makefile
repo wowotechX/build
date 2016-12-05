@@ -108,7 +108,11 @@ busybox:
 busybox-clean:
 	rm $(BUSYBOX_OUT_DIR) -rf
 
-initramfs:
+rootfs_copy:
+	mkdir -p ${ROOTFS_OUT_DIR}
+	cp -rf ${SCRIPT_DIR}/rootfs/* ${ROOTFS_OUT_DIR}/
+
+initramfs: rootfs_copy
 	mkdir -p $(OUT_DIR)
 	cd ${ROOTFS_OUT_DIR}; find . | cpio -H newc -o | gzip -9 -n > ${OUT_DIR}/initramfs.gz
 
