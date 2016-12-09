@@ -2,6 +2,8 @@
  * U-Boot uImage source file for "X project"
  */
 
+#include "xprj_config.h"
+
 /dts-v1/;
 
 / {
@@ -16,16 +18,31 @@
 			arch = "arm";
 			os = "linux";
 			compression = "none";
-			load = <0x20080000>;
-			entry = <0x20080040>;
+			load = <XC_KERNEL_LOAD_ADDR>;
+			entry = <XC_KERNEL_ENTRY_ADDR>;
 		};
+	#if XC_DTB_ENABLE
 		fdt@tiny210 {
 			description = "Flattened Device Tree blob for tiny210";
 			data = /incbin/("../out/linux/arch/arm/boot/dts/s5pv210-tiny210.dtb");
 			type = "flat_dt";
-			arch = "arm64";
+			arch = "arm";
 			compression = "none";
 		};
+	#endif
+
+	#if XC_INITRAMFS_ENABLE
+                initramfs@tiny210 {
+                        description = "initramfs for tiny210";
+                        data = /incbin/("../out/initramfs.gz");
+                        type = "ramdisk";
+                        arch = XC_BOARD_ARCH;
+                        os = "linux";
+                        compression = "gzip";
+                        load = <00000000>;
+                        entry = <00000000>;
+                };
+	#endif
 	};
 
 	configurations {
@@ -33,7 +50,12 @@
 		conf@tiny210 {
 			description = "Boot Linux kernel with FDT blob";
 			kernel = "kernel@tiny210";
+	#if XC_DTB_ENABLE
 			fdt = "fdt@tiny210";
+	#endif
+	#if XC_INITRAMFS_ENABLE
+			ramdisk = "initramfs@tiny210";
+	#endif
 		};
 	};
 };

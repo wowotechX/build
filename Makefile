@@ -18,6 +18,7 @@ DFU_DIR=$(TOOLS_DIR)/dfu
 UBOOT_DIR=$(BUILD_DIR)/../u-boot
 KERNEL_DIR=$(BUILD_DIR)/../linux
 SCRIPT_DIR=$(BUILD_DIR)/script
+ITS_DIR=$(BUILD_DIR)/its
 BUSYBOX_DIR=$(TOOLS_DIR)/common/busybox-1.25.1
 
 OUT_DIR=$(BUILD_DIR)/out
@@ -37,6 +38,7 @@ endif
 BUSYBOX_DEFCONFIG=xprj_defconfig
 
 UIMAGE_CFG_FILE=$(SCRIPT_DIR)/xprj_config.h
+UIMAGE_ITS_SOURCE=$(ITS_DIR)/fit_uImage_$(BOARD_NAME).its
 UIMAGE_ITS_FILE=$(SCRIPT_DIR)/fit_uImage_$(BOARD_NAME).its
 UIMAGE_ITB_FILE=$(OUT_DIR)/xprj_uImage_$(BOARD_NAME).itb
 
@@ -119,9 +121,10 @@ initramfs: rootfs_copy
 uImage: config-gen
 	mkdir -p $(OUT_DIR)
 	@echo "Preprocessor the .dts file ..."
+	cp $(UIMAGE_ITS_SOURCE) $(UIMAGE_ITS_FILE)
 	cpp -nostdinc -I include -undef -x assembler-with-cpp $(UIMAGE_ITS_FILE) > $(UIMAGE_ITS_FILE).tmp
 	$(UBOOT_OUT_DIR)/tools/mkimage -f $(UIMAGE_ITS_FILE).tmp $(UIMAGE_ITB_FILE)
-	@rm -f $(UIMAGE_ITS_FILE).tmp
+	@rm -f $(UIMAGE_ITS_FILE) $(UIMAGE_ITS_FILE).tmp
 
 config-gen:
 	$(SCRIPT_DIR)/config_gen.sh $(BUILD_DIR)/config.mk $(UIMAGE_CFG_FILE)
