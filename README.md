@@ -1,2 +1,2 @@
 # build
-Build tools &amp; scrips for “X Project”
+Build tools & scrips for "X Project".
