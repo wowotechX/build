@@ -8,18 +8,13 @@
 # SPDX-License-Identifier:	GPL-2.0+
 #
 include config.mk
-include env_prepare.mk
 
-BUILD_DIR=$(shell pwd)
-
-TOOLS_DIR=$(BUILD_DIR)/../tools
-LIBUSB_DIR=$(TOOLS_DIR)/common/libusb-1.0.20
 DFU_DIR=$(TOOLS_DIR)/dfu
+LIBUSB_DIR=$(TOOLS_DIR)/common/libusb-1.0.20
+BUSYBOX_DIR=$(TOOLS_DIR)/common/busybox-1.25.1
+
 UBOOT_DIR=$(BUILD_DIR)/../u-boot
 KERNEL_DIR=$(BUILD_DIR)/../linux
-SCRIPT_DIR=$(BUILD_DIR)/script
-ITS_DIR=$(BUILD_DIR)/its
-BUSYBOX_DIR=$(TOOLS_DIR)/common/busybox-1.25.1
 
 OUT_DIR=$(BUILD_DIR)/out
 UBOOT_OUT_DIR=$(OUT_DIR)/u-boot
@@ -37,15 +32,20 @@ endif
 
 BUSYBOX_DEFCONFIG=xprj_defconfig
 
-UIMAGE_CFG_FILE=$(SCRIPT_DIR)/xprj_config.h
-UIMAGE_ITS_SOURCE=$(ITS_DIR)/fit_uImage_$(BOARD_NAME).its
-UIMAGE_ITS_FILE=$(SCRIPT_DIR)/fit_uImage_$(BOARD_NAME).its
+UIMAGE_CFG_FILE=$(ITS_DIR)/xprj_config.h
+UIMAGE_ITS_FILE=$(ITS_DIR)/fit_uImage_$(BOARD_NAME).its
 UIMAGE_ITB_FILE=$(OUT_DIR)/xprj_uImage_$(BOARD_NAME).itb
 
-all: uboot kernel uImage
+# first target
+_all: all
 
-clean: dfu-clean uboot-clean kernel-clean
+env_prepare:
+	git clone $(COMPILE_URL)
 
+all: libusb dfu uboot kernel busybox initramfs uImage
+
+clean: libusb-clean dfu-clean uboot-clean kernel-clean busybox-clean
+	rm -rf $(OUT_DIR) $(UIMAGE_CFG_FILE)
 
 libusb:
 	cd $(LIBUSB_DIR) && ./configure && make && cd $(BUILD_DIR)
@@ -121,13 +121,12 @@ initramfs: rootfs_copy
 uImage: config-gen
 	mkdir -p $(OUT_DIR)
 	@echo "Preprocessor the .dts file ..."
-	cp $(UIMAGE_ITS_SOURCE) $(UIMAGE_ITS_FILE)
 	cpp -nostdinc -I include -undef -x assembler-with-cpp $(UIMAGE_ITS_FILE) > $(UIMAGE_ITS_FILE).tmp
 	$(UBOOT_OUT_DIR)/tools/mkimage -f $(UIMAGE_ITS_FILE).tmp $(UIMAGE_ITB_FILE)
-	@rm -f $(UIMAGE_ITS_FILE) $(UIMAGE_ITS_FILE).tmp
+	@rm -f $(UIMAGE_ITS_FILE).tmp
 
 config-gen:
-	$(SCRIPT_DIR)/config_gen.sh $(BUILD_DIR)/config.mk $(UIMAGE_CFG_FILE)
+	$(SCRIPT_DIR)/config_gen.sh $(CONFIGS_DIR)/config_$(BOARD_NAME).mk $(UIMAGE_CFG_FILE)
 
 #
 # some help commands

@@ -5,34 +5,40 @@
 #
 # wowo<wowo@wowotech.net>
 #
+#
+# please include whatever you need from ./configs directory
+# accroding to your real board type.
+#
+#include ./configs/config_tiny210.mk
+include ./configs/config_bubblegum.mk
+
 
 #
-# Board information
+# some common definitions
 #
-BOARD_NAME=bubblegum
-BOARD_ARCH=arm64
 
-BOARD_VENDOR=actions
+BUILD_DIR=$(shell pwd)
 
-#
-# Memory usage information
-#
-DDR_BASE=0x0
-DDR_SIZE=0x3FFFFFFF
+SCRIPT_DIR=$(BUILD_DIR)/script
+ITS_DIR=$(BUILD_DIR)/its
+CONFIGS_DIR=$(BUILD_DIR)/configs
 
-SPL_BASE=0xe406b200
+TOOLS_DIR=$(BUILD_DIR)/../tools
 
-UBOOT_BASE=0x11000000
+BIT32_64=$(shell getconf LONG_BIT)
 
-FIT_UIMAGE_BASE=0x6400000
+ifeq ($(BOARD_NAME), bubblegum)
+ifeq ($(BIT32_64), 64)
+COMPILE_URL=https://github.com/wowotechX/gcc-linaro-4.9-2015.02-3-x86_64_aarch64-linux-gnu.git
+CROSS_COMPILE=$(BUILD_DIR)/gcc-linaro-4.9-2015.02-3-x86_64_aarch64-linux-gnu/bin/aarch64-linux-gnu-
+else
+COMPILE_URL=https://github.com/wowotechX/gcc-linaro-aarch64-linux-gnu-4.8-2013.12_linux.git
+CROSS_COMPILE=$(BUILD_DIR)/gcc-linaro-aarch64-linux-gnu-4.8-2013.12_linux/bin/aarch64-linux-gnu-
+endif
+endif
 
-#
-# Linux Kernel information
-#
-KERNEL_LOAD_ADDR=0x00080000
-KERNEL_ENTRY_ADDR=0x00080000
-
-#
-# DTB information
-#
-DTB_ENABLE=1
+ifeq ($(BOARD_NAME), tiny210)
+#use arm-linux-gcc-4.8.3 to build uboot and uboot-spl.
+COMPILE_URL=https://github.com/ooonebook/arm-none-linux-gnueabi-4.8.git
+CROSS_COMPILE=$(BUILD_DIR)/arm-none-linux-gnueabi-4.8/bin/arm-none-linux-gnueabi-
+endif
