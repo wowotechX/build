@@ -67,7 +67,8 @@ uboot-config:
 	mkdir -p $(UBOOT_OUT_DIR)
 	cp -f $(UBOOT_DIR)/configs/$(BOARD_NAME)_defconfig $(UBOOT_OUT_DIR)/.config
 	make -C $(UBOOT_DIR) KBUILD_OUTPUT=$(UBOOT_OUT_DIR) menuconfig
-	cp -f $(UBOOT_OUT_DIR)/.config $(UBOOT_DIR)/configs/$(BOARD_NAME)_defconfig
+	make -C $(UBOOT_DIR) KBUILD_OUTPUT=$(UBOOT_OUT_DIR) savedefconfig
+	cp -f $(UBOOT_OUT_DIR)/defconfig $(UBOOT_DIR)/configs/$(BOARD_NAME)_defconfig
 
 uboot:
 	mkdir -p $(UBOOT_OUT_DIR)
@@ -85,7 +86,8 @@ kernel-config:
 	mkdir -p $(KERNEL_OUT_DIR)
 	cp -f $(KERNEL_DIR)/arch/$(BOARD_ARCH)/configs/$(KERNEL_DEFCONFIG) $(KERNEL_OUT_DIR)/.config
 	make -C $(KERNEL_DIR) KBUILD_OUTPUT=$(KERNEL_OUT_DIR) ARCH=$(BOARD_ARCH) menuconfig
-	cp -f $(KERNEL_OUT_DIR)/.config $(KERNEL_DIR)/arch/$(BOARD_ARCH)/configs/$(KERNEL_DEFCONFIG)
+	make -C $(KERNEL_DIR) KBUILD_OUTPUT=$(KERNEL_OUT_DIR) ARCH=$(BOARD_ARCH) savedefconfig
+	cp -f $(KERNEL_OUT_DIR)/defconfig $(KERNEL_DIR)/arch/$(BOARD_ARCH)/configs/$(KERNEL_DEFCONFIG)
 
 kernel:
 	mkdir -p $(KERNEL_OUT_DIR)
