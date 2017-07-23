@@ -48,7 +48,7 @@ clean: libusb-clean dfu-clean uboot-clean kernel-clean busybox-clean
 	rm -rf $(OUT_DIR) $(UIMAGE_CFG_FILE)
 
 libusb:
-	cd $(LIBUSB_DIR) && ./configure && make && cd $(BUILD_DIR)
+	cd $(LIBUSB_DIR) && ./configure CFLAGS=-DHAVE_STRUCT_TIMESPEC --enable-udev=no && make && cd $(BUILD_DIR)
 
 libusb-clean:
 	cd $(LIBUSB_DIR) && make distclean && cd $(BUILD_DIR)
